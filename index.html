@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spin the Wheel Game</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #4b0a4f;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #fff;
+    }
+
+    .wheel-container {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      text-align: center;
+    }
+
+    .wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 10px solid gold;
+      position: relative;
+      overflow: hidden;
+      transform: rotate(0deg);
+      transition: transform 5s cubic-bezier(0.33, 1, 0.68, 1);
+    }
+
+    .wheel div {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      top: 50%;
+      left: 50%;
+      transform-origin: 0% 0%;
+      text-align: center;
+    }
+
+    .wheel img {
+      width: 60px;
+      height: 60px;
+      margin-top: -30px;
+      margin-left: -30px;
+    }
+
+    .car-fixed {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+    }
+
+    .car-fixed img {
+      width: 70px;
+      height: 70px;
+    }
+
+    #countdown {
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    #result {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 20px;
+      color: yellow;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      background: gold;
+      color: black;
+      font-size: 18px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:disabled {
+      background: gray;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="wheel-container">
+    <!-- Car stays fixed at the top -->
+    <div class="car-fixed">
+      <img src="https://img.icons8.com/color/96/car.png" alt="car">
+    </div>
+
+    <!-- The wheel with 8 items -->
+    <div class="wheel" id="wheel">
+      <div style="transform: rotate(0deg) translate(0, -200px);"><img src="https://img.icons8.com/color/96/unicorn.png"></div>
+      <div style="transform: rotate(45deg) translate(0, -200px);"><img src="https://img.icons8.com/color/96/balloons.png"></div>
+      <div style="transform: rotate(90deg) translate(0, -200px);"><img src="https://img.icons8.com/color/96/tomato.png"></div>
+      <div style="transform: rotate(135deg) translate(0, -200px);"><img src="https://img.icons8.com/color/96/hot-dog.png"></div>
+      <div style="transform: rotate(180deg) translate(0, -200px);"><img src="https://img.icons8.com/color/96/carrot.png"></div>
+      <div style="transform: rotate(225deg) translate(0, -200px);"><img src="https://img.icons8.com/color/96/chicken-leg.png"></div>
+      <div style="transform: rotate(270deg) translate(0, -200px);"><img src="https://img.icons8.com/color/96/lollipop.png"></div>
+      <div style="transform: rotate(315deg) translate(0, -200px);"><img src="https://img.icons8.com/color/96/pizza.png"></div>
+    </div>
+
+    <button id="startBtn" onclick="startGame()">Start Game</button>
+    <div id="countdown"></div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    let wheel = document.getElementById("wheel");
+    let countdownEl = document.getElementById("countdown");
+    let resultEl = document.getElementById("result");
+    let startBtn = document.getElementById("startBtn");
+    let currentRotation = 0;
+
+    const prizes = [
+      "Unicorn 🦄",
+      "Balloons 🎈",
+      "Tomato 🍅",
+      "Hotdog 🌭",
+      "Carrot 🥕",
+      "Chicken 🍗",
+      "Lollipop 🍭",
+      "Pizza 🍕"
+    ];
+
+    function startGame() {
+      startBtn.style.display = "none";
+      gameCycle();
+    }
+
+    function gameCycle() {
+      let timeLeft = 30;
+      countdownEl.textContent = "Countdown: " + timeLeft + "s";
+      resultEl.textContent = "";
+
+      let timer = setInterval(() => {
+        timeLeft--;
+        countdownEl.textContent = "Countdown: " + timeLeft + "s";
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          countdownEl.textContent = "Spinning...";
+          spinWheel();
+        }
+      }, 1000);
+    }
+
+    function spinWheel() {
+      let randomSpin = Math.floor(Math.random() * 360) + 1800;
+      currentRotation += randomSpin;
+      wheel.style.transition = "transform 5s cubic-bezier(0.33, 1, 0.68, 1)";
+      wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+      setTimeout(() => {
+        let normalized = (currentRotation % 360 + 360) % 360;
+        let segment = Math.floor(normalized / 45);
+        let winningIndex = (8 - segment) % 8;
+        let prize = prizes[winningIndex];
+
+        countdownEl.textContent = "Results...";
+        
+        setTimeout(() => {
+          resultEl.textContent = "🎉 You got: " + prize;
+          setTimeout(() => {
+            gameCycle();
+          }, 1000);
+        }, 5000);
+      }, 5000);
+    }
+  </script>
+</body>
+  </html>
